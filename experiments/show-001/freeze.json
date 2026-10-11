@@ -6,7 +6,7 @@
     "roles.json": "e247140e15059d8de1604b79b08539fbe74a8c8df5021e070bf174a19638b6d1",
     "capabilities.json": "9dd9ae51cfe5e23c4e0df2ce06fbc09596393371f7007fc8e694386606e3421f",
     "models.json": "091093c413663fb2a95cf3ef1fbb97534a8708a2d016b52689826b2831ec1631",
-    "README.md": "5dbf799d3e2f90937a556e8300f11049f797dcf70e31411fcaf902293b245deb"
+    "README.md": "1c2e69ecaa847ba2b688ab24c92e01da7bf9ce7733ecec8095113b07fe0d280b"
   },
   "notes": "Configuration freeze for the 12-agent MOLT show panel; runner and services may evolve outside this config freeze."
 }

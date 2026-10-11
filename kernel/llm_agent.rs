@@ -30,6 +30,59 @@ pub struct AnthropicClient {
     pub max_tokens: u32,
 }
 
+/// Calls a local Ollama server through its chat endpoint. The server URL is
+/// configurable so the runner can use localhost, a Raspberry Pi, or a LAN
+/// host without putting credentials in config files.
+pub struct OllamaClient {
+    pub base_url: String,
+    pub model: String,
+    pub max_tokens: u32,
+}
+
+impl OllamaClient {
+    pub fn from_env(model: impl Into<String>) -> Self {
+        let base_url = std::env::var("OLLAMA_BASE_URL")
+            .unwrap_or_else(|_| "http://127.0.0.1:11434".to_string())
+            .trim_end_matches('/')
+            .to_string();
+        Self {
+            base_url,
+            model: model.into(),
+            max_tokens: 1024,
+        }
+    }
+}
+
+impl LlmClient for OllamaClient {
+    fn complete(&self, system_prompt: &str, transcript: &str) -> Result<String, WorldError> {
+        let body = serde_json::json!({
+            "model": self.model,
+            "stream": false,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": transcript}
+            ],
+            "options": {"num_predict": self.max_tokens}
+        });
+
+        let response = ureq::post(&format!("{}/api/chat", self.base_url))
+            .set("content-type", "application/json")
+            .send_json(body)
+            .map_err(|e| WorldError::Capability(format!("ollama request failed: {e}")))?;
+
+        let parsed: serde_json::Value = response
+            .into_json()
+            .map_err(|e| WorldError::Capability(format!("ollama response parse failed: {e}")))?;
+
+        parsed["message"]["content"]
+            .as_str()
+            .map(|s| s.to_string())
+            .ok_or_else(|| {
+                WorldError::Capability("ollama response had no message content".into())
+            })
+    }
+}
+
 impl AnthropicClient {
     /// Builds a client from `ANTHROPIC_API_KEY`. Returns `None` if the
     /// variable isn't set, so callers can fail fast with a clear message

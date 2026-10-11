@@ -7,9 +7,11 @@
 //! in the store — the resulting JSONL is the raw transcript, nothing
 //! post-processed.
 //!
-//! Requires ANTHROPIC_API_KEY in the environment. Without it, this prints
-//! what it would have done and exits — it will not silently run on canned
-//! text, because that wouldn't be the thing this experiment is for.
+//! Select a backend with `--backend anthropic|ollama|mock`. Ollama uses the
+//! shell-to-model map in `--models` (defaulting to the show-001 map), while
+//! `--model` overrides that map for every agent. Anthropic reads its key from
+//! `ANTHROPIC_API_KEY`; Ollama reads `OLLAMA_BASE_URL` or defaults to the local
+//! server at `http://127.0.0.1:11434`.
 //!
 //! ROLE SLOT. The persona seed for every agent is generated from
 //! population.json alone, identically every run. On top of that, this build
@@ -24,7 +26,7 @@
 
 use molt_kernel::genesis::create_genesis;
 use molt_kernel::identity::Identity;
-use molt_kernel::llm_agent::{AnthropicClient, LlmAgentShell};
+use molt_kernel::llm_agent::{AnthropicClient, LlmAgentShell, MockClient, OllamaClient};
 use molt_kernel::memory::FileMemoryStore;
 use molt_kernel::runtime::LocalWorld;
 use molt_kernel::store::{EventStore, FileEventStore};
@@ -58,6 +60,17 @@ struct RoleSlot {
     role_goals: Option<Vec<String>>,
     #[serde(default)]
     role_behavior: Option<String>,
+}
+
+#[derive(Deserialize, Clone)]
+struct ModelSlot {
+    model: String,
+}
+
+#[derive(Deserialize, Default)]
+struct ModelsFile {
+    #[serde(default)]
+    shells: BTreeMap<String, ModelSlot>,
 }
 
 /// What gets persisted to `--identities` so a population can be resumed
@@ -144,6 +157,45 @@ fn persona_seed(
     persona
 }
 
+fn client_for(
+    backend: &str,
+    model_override: &str,
+    shell: &str,
+    models: &ModelsFile,
+) -> Result<Box<dyn molt_kernel::llm_agent::LlmClient>, String> {
+    match backend {
+        "ollama" => {
+            let model = if model_override.is_empty() {
+                models
+                    .shells
+                    .get(shell)
+                    .map(|slot| slot.model.clone())
+                    .ok_or_else(|| format!("no Ollama model configured for shell {shell}"))?
+            } else {
+                model_override.to_string()
+            };
+            println!("  {shell} -> Ollama/{model}");
+            Ok(Box::new(OllamaClient::from_env(model)))
+        }
+        "anthropic" => {
+            let model = if model_override.is_empty() {
+                "claude-sonnet-4-6".to_string()
+            } else {
+                model_override.to_string()
+            };
+            AnthropicClient::from_env(model)
+                .map(|client| Box::new(client) as Box<dyn molt_kernel::llm_agent::LlmClient>)
+                .ok_or_else(|| "ANTHROPIC_API_KEY is not set".to_string())
+        }
+        "mock" => Ok(Box::new(MockClient {
+            fixed_reply: "[mock reply]".to_string(),
+        })),
+        other => Err(format!(
+            "unknown backend {other}; expected ollama, anthropic, or mock"
+        )),
+    }
+}
+
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
     let population_path = option(&args, "--population", "experiments/emergence-001/population.json");
@@ -151,18 +203,12 @@ fn main() -> Result<(), String> {
     let store_path = option(&args, "--store", "events.jsonl");
     let memory_path = option(&args, "--memory", "memory.jsonl");
     let identities_path = option(&args, "--identities", "identities.json");
+    let backend = option(&args, "--backend", "anthropic");
+    let models_path = option(&args, "--models", "experiments/show-001/models.json");
     let rounds: u32 = option(&args, "--rounds", "6")
         .parse()
         .map_err(|_| "--rounds must be an integer".to_string())?;
-    let model = option(&args, "--model", "claude-sonnet-4-6");
-
-    if std::env::var("ANTHROPIC_API_KEY").is_err() {
-        return Err(
-            "ANTHROPIC_API_KEY is not set. This run makes real model calls on purpose — \
-             set the key and re-run rather than falling back to canned output."
-                .to_string(),
-        );
-    }
+    let model = option(&args, "--model", "");
 
     let raw = fs::read_to_string(&population_path).map_err(|e| e.to_string())?;
     let population: PopulationFile = serde_json::from_str(&raw).map_err(|e| e.to_string())?;
@@ -174,6 +220,16 @@ fn main() -> Result<(), String> {
         Ok(raw) => serde_json::from_str(&raw).map_err(|e| format!("{roles_path}: {e}"))?,
         Err(_) => BTreeMap::new(),
     };
+
+    let models: ModelsFile = match fs::read_to_string(&models_path) {
+        Ok(raw) => serde_json::from_str(&raw).map_err(|e| format!("{models_path}: {e}"))?,
+        Err(error) if backend == "ollama" => {
+            return Err(format!("cannot load Ollama model map {models_path}: {error}"));
+        }
+        Err(_) => ModelsFile::default(),
+    };
+
+    println!("backend: {backend}");
 
     let store = FileEventStore::open(&store_path).map_err(|e| e.to_string())?;
     let memory = FileMemoryStore::open(&memory_path).map_err(|e| e.to_string())?;
@@ -228,9 +284,8 @@ fn main() -> Result<(), String> {
         // plus the role file, so neither can drift out of sync with the
         // store. Role text is seed text; it is never persisted as identity.
         let persona = persona_seed(agent_def, agent_ids.len(), roles.get(&agent_def.agent_id));
-        let client = AnthropicClient::from_env(model.clone())
-            .ok_or_else(|| "ANTHROPIC_API_KEY vanished between check and use".to_string())?;
-        let shell = LlmAgentShell::new(agent_def.agent_id.clone(), persona, peers, Box::new(client));
+        let client = client_for(&backend, &model, &agent_def.shell, &models)?;
+        let shell = LlmAgentShell::new(agent_def.agent_id.clone(), persona, peers, client);
         world
             .register_agent(identity.clone(), Box::new(shell))
             .map_err(|e| e.to_string())?;

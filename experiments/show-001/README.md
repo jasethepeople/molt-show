@@ -41,10 +41,19 @@ emergence baseline:
 
 ```bash
 cargo run --bin converse -- \
+  --backend ollama \
   --population experiments/show-001/population.json \
   --roles experiments/show-001/roles.json \
+  --models experiments/show-001/models.json \
   --rounds 6
 ```
+
+`models.json` maps Shell-A through Shell-D to different Ollama models. Use
+`--model MODEL_NAME` to override the map for a controlled comparison. Set
+`OLLAMA_BASE_URL` when Ollama runs on another host; otherwise the runner uses
+`http://127.0.0.1:11434`. The existing Anthropic path remains available with
+`--backend anthropic`, and `--backend mock` is useful for zero-cost wiring
+tests.
 
 ## Invariants
 
