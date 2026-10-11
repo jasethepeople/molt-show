@@ -1,0 +1,9 @@
+{
+  "A01": {
+    "role": "[AGENT 1 ROLE]",
+    "role_goals": [
+      "[ROLE GOALS]"
+    ],
+    "role_behavior": "[ROLE BEHAVIOR]"
+  }
+}

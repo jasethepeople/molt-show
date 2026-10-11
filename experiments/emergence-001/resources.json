@@ -1,0 +1,15 @@
+{
+  "resource_scope_id": "E001-resources-v1",
+  "pools": [
+    {"pool_id":"compute-pool","resource_type":"compute_units","capacity":12000},
+    {"pool_id":"storage-pool","resource_type":"storage_units","capacity":12000},
+    {"pool_id":"experiment-pool","resource_type":"experiment_runs","capacity":120}
+  ],
+  "initial_allocation": {
+    "policy": "equal_base_lease_plus_explicit_genesis",
+    "base_compute_per_agent": 500,
+    "base_storage_per_agent": 500,
+    "base_experiment_runs_per_agent": 5
+  },
+  "conservation": "kernel_resource_invariants"
+}

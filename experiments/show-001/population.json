@@ -1,0 +1,19 @@
+{
+  "population_id": "SHOW001-population-v1",
+  "agents": [
+    {"agent_id":"A01","shell":"Shell-A","capabilities":["post_message"]},
+    {"agent_id":"A02","shell":"Shell-A","capabilities":["post_message","web_research"]},
+    {"agent_id":"A03","shell":"Shell-A","capabilities":["post_message","web_research"]},
+    {"agent_id":"A04","shell":"Shell-B","capabilities":["post_message"]},
+    {"agent_id":"A05","shell":"Shell-B","capabilities":["post_message"]},
+    {"agent_id":"A06","shell":"Shell-B","capabilities":["post_message"]},
+    {"agent_id":"A07","shell":"Shell-C","capabilities":["post_message"]},
+    {"agent_id":"A08","shell":"Shell-C","capabilities":["post_message"]},
+    {"agent_id":"A09","shell":"Shell-C","capabilities":["post_message","raise_objection"]},
+    {"agent_id":"A10","shell":"Shell-D","capabilities":["post_message"]},
+    {"agent_id":"A11","shell":"Shell-D","capabilities":["post_message"]},
+    {"agent_id":"A12","shell":"Shell-D","capabilities":["post_message","propose_segment"]}
+  ],
+  "role_assignment": "roles.json",
+  "capability_assignment": "explicit_and_observable"
+}

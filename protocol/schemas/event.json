@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://molt.local/schema/event/0.1",
+  "title": "MOLT Event",
+  "type": "object",
+  "required": ["event_id","event_type","protocol","actor_id","logical_clock","sequence_number","timestamp","parents","payload","evidence_refs","resource_refs","signature","content_hash"],
+  "properties": {
+    "event_id": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "event_type": {"type":"string","minLength":1},
+    "protocol": {"type":"string","const":"MOLT/0.1"},
+    "actor_id": {"type":"string","minLength":1},
+    "logical_clock": {"type":"integer","minimum":0},
+    "sequence_number": {"type":"integer","minimum":0},
+    "timestamp": {"type":"string","format":"date-time"},
+    "parents": {"type":"array","items":{"type":"string"}},
+    "payload": {},
+    "evidence_refs": {"type":"array","items":{"type":"string"}},
+    "resource_refs": {"type":"array","items":{"type":"string"}},
+    "signature": {"type":"string","pattern":"^[0-9a-f]{128}$"},
+    "content_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

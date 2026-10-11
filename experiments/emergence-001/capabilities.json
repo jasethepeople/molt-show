@@ -1,0 +1,12 @@
+{
+  "capability_set_id": "E001-capabilities-v1",
+  "capabilities": [
+    {"capability_id":"mathematics","interface":"math.v1","version":"1.0","requirements":["compute"]},
+    {"capability_id":"physics","interface":"physics.v1","version":"1.0","requirements":["compute"]},
+    {"capability_id":"simulation","interface":"simulation.v1","version":"1.0","requirements":["compute","storage"]},
+    {"capability_id":"communication","interface":"communication.v1","version":"1.0","requirements":[]},
+    {"capability_id":"document_analysis","interface":"document-analysis.v1","version":"1.0","requirements":["compute"]}
+  ],
+  "authorization": "population_json_is_authoritative",
+  "roles": []
+}

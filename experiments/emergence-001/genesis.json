@@ -1,0 +1,13 @@
+{
+  "experiment_id": "EMERGENCE-001",
+  "version": "0.1.0",
+  "run_family": "E001",
+  "genesis_kind": "local_deterministic_experiment",
+  "population_size": 12,
+  "transport": "none",
+  "organization": "unspecified",
+  "repeatability": {
+    "run_id_format": "E001-{condition}-{replicate}",
+    "replicate_policy": "independent_runs_with_identical_configuration"
+  }
+}

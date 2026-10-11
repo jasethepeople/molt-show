@@ -1,0 +1,19 @@
+{
+  "population_id": "E001-population-v1",
+  "agents": [
+    {"agent_id":"A01","shell":"Shell-A","capabilities":["mathematics"]},
+    {"agent_id":"A02","shell":"Shell-A","capabilities":["physics"]},
+    {"agent_id":"A03","shell":"Shell-A","capabilities":["simulation"]},
+    {"agent_id":"A04","shell":"Shell-B","capabilities":["mathematics"]},
+    {"agent_id":"A05","shell":"Shell-B","capabilities":["physics"]},
+    {"agent_id":"A06","shell":"Shell-B","capabilities":["simulation"]},
+    {"agent_id":"A07","shell":"Shell-C","capabilities":["mathematics"]},
+    {"agent_id":"A08","shell":"Shell-C","capabilities":["physics"]},
+    {"agent_id":"A09","shell":"Shell-C","capabilities":["simulation"]},
+    {"agent_id":"A10","shell":"Shell-D","capabilities":["mathematics","physics","simulation"]},
+    {"agent_id":"A11","shell":"Shell-D","capabilities":["mathematics","physics","simulation"]},
+    {"agent_id":"A12","shell":"Shell-D","capabilities":["mathematics","physics","simulation"]}
+  ],
+  "role_assignment": "none",
+  "capability_assignment": "explicit_and_observable"
+}

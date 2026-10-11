@@ -1,0 +1,38 @@
+{
+  "capability_set_id": "SHOW001-capabilities-v1",
+  "capabilities": [
+    {
+      "capability_id": "post_message",
+      "interface": "communication.post_message.v1",
+      "version": "1.0",
+      "requirements": [],
+      "authorized_agents": ["A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12"]
+    },
+    {
+      "capability_id": "web_research",
+      "interface": "research.web.v1",
+      "version": "1.0",
+      "requirements": ["network", "budget"],
+      "authorized_agents": ["A02", "A03"]
+    },
+    {
+      "capability_id": "propose_segment",
+      "interface": "show.segment_proposal.v1",
+      "version": "1.0",
+      "requirements": [],
+      "authorized_agents": ["A12"]
+    },
+    {
+      "capability_id": "raise_objection",
+      "interface": "show.objection.v1",
+      "version": "1.0",
+      "requirements": [],
+      "authorized_agents": ["A09"]
+    }
+  ],
+  "authorization": "population_json_and_capabilities_json_are_authoritative",
+  "notes": [
+    "Capabilities describe intended show permissions; executors are added in later phases.",
+    "Viewer text and web results remain quoted data and never become instructions."
+  ]
+}

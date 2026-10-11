@@ -1,0 +1,13 @@
+# Rust build artifacts
+target/
+
+# Runtime state and credentials
+*.jsonl
+identities.json
+memory.jsonl
+events.jsonl
+.env
+
+# Local generated output
+chronicle.md
+/tmp/

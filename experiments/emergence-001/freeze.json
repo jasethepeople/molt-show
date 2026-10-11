@@ -1,0 +1,35 @@
+{
+  "experiment": "EMERGENCE-001",
+  "kernel_protocol": "MOLT/0.1-alpha2",
+  "frozen_at": "2026-09-19T00:00:00Z",
+  "note": "This freeze locks the EMERGENCE-001 baseline definition by content hash. It does not itself grant emergence semantics, prescribe organization, or feed Observatory analysis back into the world — see policies.json and README.md for those constraints. If any file listed under frozen_files changes, its hash here will no longer match and the baseline is no longer intact.",
+  "hash_algorithm": "BLAKE3",
+  "frozen_files": {
+    "capabilities.json": "0f675e9e5585723a485373351766bf408f507d211566297cd6db0317ae83adf1",
+    "genesis.json": "8613b3ecc7fc7dfb32a247a800e6bd66ed366249a16f9307889185b6c303a902",
+    "objective.json": "5909e2ea2a66c698ddf2a66f10fc2bbb6903ef96505a7f364a959e00574de682",
+    "policies.json": "2af822cdb9757cf988032a324bc370aa8ad3e985de7c3e4e9cf78703c90da408",
+    "population.json": "03fe0666f0337b8618fec7f653b630eae39b5becc35912c1eaff2e709c15ff68",
+    "resources.json": "f8fe60414bfe35947e4b3ac67e5618c9346bd51965b9fa6abb082f33ce93e699"
+  },
+  "reserved_baseline_run_ids": [
+    "E001-baseline-001",
+    "E001-baseline-002",
+    "E001-baseline-003",
+    "E001-baseline-004"
+  ],
+  "run_manifest_requirements": [
+    "configuration",
+    "software",
+    "genesis",
+    "event-root",
+    "archive",
+    "final-state",
+    "analysis"
+  ],
+  "constraints": [
+    "Observatory analysis must not feed optimization or actions back into the baseline world.",
+    "A baseline run ID may be used at most once; a reused ID invalidates comparison across runs.",
+    "Changes to event, resource, replay, or snapshot semantics must go through explicit protocol evolution, not silent behavior changes underneath this experiment."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "objective_id": "bridge-100m-v1",
+  "statement": "Design a structurally valid bridge spanning 100 meters while satisfying load, material, geometric, and safety constraints.",
+  "span_m": 100,
+  "validation": {
+    "required": [
+      "span_geometry_valid",
+      "load_case_passes",
+      "material_limits_pass",
+      "deflection_limit_passes",
+      "stability_checks_pass",
+      "evidence_bundle_present"
+    ],
+    "validator": "external_deterministic_validator_v1"
+  },
+  "termination": {
+    "max_event_count": 10000,
+    "max_experiment_steps": 1000,
+    "explicit_success": true,
+    "human_intervention": "as_defined_by_policies_json"
+  }
+}

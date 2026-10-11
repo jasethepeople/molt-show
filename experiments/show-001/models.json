@@ -1,0 +1,18 @@
+{
+  "model_set_id": "SHOW001-models-v1",
+  "backend": "ollama",
+  "shells": {
+    "Shell-A": {"model": "qwen2.5:7b", "purpose": "research and precision"},
+    "Shell-B": {"model": "llama3.1:8b", "purpose": "debate and general reasoning"},
+    "Shell-C": {"model": "mistral:7b", "purpose": "skepticism and concise critique"},
+    "Shell-D": {"model": "gemma2:9b", "purpose": "synthesis and creative variation"}
+  },
+  "fallback": {
+    "backend": "anthropic",
+    "model": "claude-sonnet-4-6"
+  },
+  "notes": [
+    "Model names are configurable examples and must be installed in Ollama before a live run.",
+    "The runner must select the model from this file by each agent's shell; shell labels are not diversity by themselves."
+  ]
+}

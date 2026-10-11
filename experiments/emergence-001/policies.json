@@ -1,0 +1,14 @@
+{
+  "policy_set_id": "E001-policies-v1",
+  "audit_level": "FullObservableTrace",
+  "intervention_policy": "EmergencyStopOnly",
+  "privacy_scope": "Participant",
+  "communication": {
+    "enabled": true,
+    "predefined_contacts": false,
+    "message_kinds": ["SEND_MESSAGE","REQUEST","PROPOSAL","CHALLENGE","EVIDENCE","OFFER","ACCEPT","REJECT"]
+  },
+  "memory": {"persistent": true},
+  "prescribed_organization": [],
+  "observatory_authority": "read_only_unless_intervention_policy_event_authorizes_action"
+}
