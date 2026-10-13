@@ -14,6 +14,8 @@ The panel intentionally contains **12 agents**. The earlier proposal for 14 agen
 - `roles.json`: show-specific roles and behavior guidance
 - `capabilities.json`: show permissions and capability authorization
 - `models.json`: explicit shell-to-local-model assignments and fallback model
+- `gate-greenbrier-unsourced.json`: regression fixture that must be rejected
+- `gate-greenbrier-cited.json`: regression fixture that may pass
 
 ## Planned additions
 
@@ -59,6 +61,30 @@ tests.
 `--question` is for a fresh run only. It appends a signed
 `VIEWER_QUESTION_POSTED` event and exposes the question to every agent as
 quoted viewer data rather than as a system instruction.
+
+## Pre-publication gate
+
+The standalone gate is outside agent control. It consumes a JSON proposal and
+returns `pass`, `review`, or `reject` with machine-readable findings:
+
+```bash
+cargo run --bin gate -- \
+  --input experiments/show-001/gate-greenbrier-unsourced.json
+```
+
+The deterministic v1 checks cover:
+
+- missing AI disclosure
+- quantified or named factual claims without inline `[source:ID]` citations
+- unknown, non-HTTPS, or weakly matching source records
+- unsupported factual-sounding language routed to human review
+- internal capability or prompt leakage
+- phone-like personal data
+
+The Greenbrier-style `24%` claim is rejected without a citation. A cited claim
+is only eligible to pass when its source record uses HTTPS and its support text
+matches the claim. The gate does not claim that a source is truthful; it checks
+traceability and routes uncertain cases to review.
 
 ## Invariants
 

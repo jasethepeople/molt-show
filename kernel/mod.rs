@@ -2,6 +2,7 @@ pub mod agent;
 pub mod clock;
 pub mod events;
 pub mod experiment;
+pub mod gate;
 pub mod genesis;
 pub mod hash;
 pub mod identity;

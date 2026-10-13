@@ -6,7 +6,9 @@
     "roles.json": "e247140e15059d8de1604b79b08539fbe74a8c8df5021e070bf174a19638b6d1",
     "capabilities.json": "9dd9ae51cfe5e23c4e0df2ce06fbc09596393371f7007fc8e694386606e3421f",
     "models.json": "091093c413663fb2a95cf3ef1fbb97534a8708a2d016b52689826b2831ec1631",
-    "README.md": "1c2e69ecaa847ba2b688ab24c92e01da7bf9ce7733ecec8095113b07fe0d280b"
+    "README.md": "6b67783ae462bfde14181d4670046de7e32c56a74193113890a3afaeee282c39",
+    "gate-greenbrier-unsourced.json": "f138b2203e21f6bcb096133f59e61fd111701d3987fdd5acc6b1ece22014f9ef",
+    "gate-greenbrier-cited.json": "476a801d7fd9e8acadafe3dd628f0fde73e92194976d4c63aa2196c442eaa0b3"
   },
   "notes": "Configuration freeze for the 12-agent MOLT show panel; runner and services may evolve outside this config freeze."
 }

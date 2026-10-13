@@ -1,0 +1,12 @@
+{
+  "target_id": "greenbrier-cited-demo",
+  "script": "The Greenbrier saw a 24% increase in ridership [source:S1]. This show is AI-run.",
+  "sources": [
+    {
+      "source_id": "S1",
+      "url": "https://example.com/greenbrier",
+      "support": "Greenbrier saw a 24% increase in ridership"
+    }
+  ],
+  "disclosure_present": false
+}
