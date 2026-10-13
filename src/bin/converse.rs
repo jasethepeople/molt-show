@@ -12,6 +12,9 @@
 //! `--model` overrides that map for every agent. Anthropic reads its key from
 //! `ANTHROPIC_API_KEY`; Ollama reads `OLLAMA_BASE_URL` or defaults to the local
 //! server at `http://127.0.0.1:11434`.
+//! A fresh run may also use `--question TEXT` to append a signed
+//! `VIEWER_QUESTION_POSTED` data event before the first turn. The question is
+//! length-limited and shown to agents inside quoted data delimiters.
 //!
 //! ROLE SLOT. The persona seed for every agent is generated from
 //! population.json alone, identically every run. On top of that, this build
@@ -24,6 +27,7 @@
 //! identity, or any event, and an absent role leaves the baseline seed
 //! byte-for-byte unchanged.
 
+use molt_kernel::events::create_signed_event;
 use molt_kernel::genesis::create_genesis;
 use molt_kernel::identity::Identity;
 use molt_kernel::llm_agent::{AnthropicClient, LlmAgentShell, MockClient, OllamaClient};
@@ -205,6 +209,7 @@ fn main() -> Result<(), String> {
     let identities_path = option(&args, "--identities", "identities.json");
     let backend = option(&args, "--backend", "anthropic");
     let models_path = option(&args, "--models", "experiments/show-001/models.json");
+    let question = option(&args, "--question", "");
     let rounds: u32 = option(&args, "--rounds", "6")
         .parse()
         .map_err(|_| "--rounds must be an integer".to_string())?;
@@ -231,9 +236,41 @@ fn main() -> Result<(), String> {
 
     println!("backend: {backend}");
 
-    let store = FileEventStore::open(&store_path).map_err(|e| e.to_string())?;
+    let mut store = FileEventStore::open(&store_path).map_err(|e| e.to_string())?;
     let memory = FileMemoryStore::open(&memory_path).map_err(|e| e.to_string())?;
     let store_has_history = !store.all().map_err(|e| e.to_string())?.is_empty();
+    if !question.trim().is_empty() {
+        if store_has_history {
+            return Err(format!(
+                "cannot seed --question into existing history at {store_path}; use a fresh store"
+            ));
+        }
+        let clean_question = question.trim();
+        if clean_question.chars().count() > 1000 {
+            return Err("--question must be at most 1000 characters".to_string());
+        }
+        let question_identity = Identity::generate("viewer-intake");
+        let question_event = create_signed_event(
+            &question_identity,
+            "VIEWER_QUESTION_POSTED",
+            "MOLT/0.1",
+            0,
+            0,
+            &molt_kernel::clock::now_rfc3339(),
+            vec![],
+            serde_json::json!({
+                "question_id": "seed-001",
+                "source": "viewer",
+                "question": clean_question
+            }),
+            vec![],
+            vec![],
+        );
+        store
+            .append(question_event.clone())
+            .map_err(|e| e.to_string())?;
+        println!("seeded viewer question: {}", question_event.event_id);
+    }
     let mut world = LocalWorld::new("emergence-001", store, memory);
 
     let (identities, freshly_generated) = load_or_create_identities(&identities_path, &agent_ids)?;

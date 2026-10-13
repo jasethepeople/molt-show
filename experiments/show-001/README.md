@@ -45,6 +45,7 @@ cargo run --bin converse -- \
   --population experiments/show-001/population.json \
   --roles experiments/show-001/roles.json \
   --models experiments/show-001/models.json \
+  --question "Should cities prioritize expanding public transit or improving roads when budgets are limited?" \
   --rounds 6
 ```
 
@@ -54,6 +55,10 @@ cargo run --bin converse -- \
 `http://127.0.0.1:11434`. The existing Anthropic path remains available with
 `--backend anthropic`, and `--backend mock` is useful for zero-cost wiring
 tests.
+
+`--question` is for a fresh run only. It appends a signed
+`VIEWER_QUESTION_POSTED` event and exposes the question to every agent as
+quoted viewer data rather than as a system instruction.
 
 ## Invariants
 
