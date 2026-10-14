@@ -69,7 +69,10 @@ returns `pass`, `review`, or `reject` with machine-readable findings:
 
 ```bash
 cargo run --bin gate -- \
-  --input experiments/show-001/gate-greenbrier-unsourced.json
+  --input experiments/show-001/gate-greenbrier-unsourced.json \
+  --output /tmp/gate-report.json \
+  --audit /tmp/gate-audit.jsonl \
+  --review-queue /tmp/human-review.jsonl
 ```
 
 The deterministic v1 checks cover:
@@ -85,6 +88,12 @@ The Greenbrier-style `24%` claim is rejected without a citation. A cited claim
 is only eligible to pass when its source record uses HTTPS and its support text
 matches the claim. The gate does not claim that a source is truthful; it checks
 traceability and routes uncertain cases to review.
+
+Every evaluation can append the machine-readable report to an audit JSONL
+stream. Any `review` or `reject` verdict is appended to the human-review queue
+with status `pending_human_review`. Both verdicts return a non-zero exit status,
+so a producer or CI pipeline cannot accidentally publish a non-pass proposal.
+Only `pass` exits successfully.
 
 ## Invariants
 

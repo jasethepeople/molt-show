@@ -7,6 +7,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fs::OpenOptions;
+use std::io::Write;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SourceRecord {
@@ -40,6 +42,35 @@ pub struct GateReport {
     pub findings: Vec<GateFinding>,
     pub checked_sentences: usize,
     pub cited_sentences: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ReviewQueueItem {
+    pub queue_id: String,
+    pub target_id: String,
+    pub verdict: String,
+    pub status: String,
+    pub report: GateReport,
+}
+
+pub fn review_queue_item(report: GateReport) -> ReviewQueueItem {
+    ReviewQueueItem {
+        queue_id: format!("gate-{}", report.target_id),
+        target_id: report.target_id.clone(),
+        verdict: report.verdict.clone(),
+        status: "pending_human_review".to_string(),
+        report,
+    }
+}
+
+pub fn append_jsonl<T: Serialize>(path: &str, value: &T) -> Result<(), String> {
+    let encoded = serde_json::to_string(value).map_err(|e| e.to_string())?;
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .map_err(|e| e.to_string())?;
+    writeln!(file, "{encoded}").map_err(|e| e.to_string())
 }
 
 pub fn evaluate(request: &GateRequest) -> GateReport {
