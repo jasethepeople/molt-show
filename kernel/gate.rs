@@ -53,6 +53,16 @@ pub struct ReviewQueueItem {
     pub report: GateReport,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ReviewDecision {
+    pub queue_id: String,
+    pub target_id: String,
+    pub reviewer: String,
+    pub decision: String,
+    pub note: String,
+    pub status: String,
+}
+
 pub fn review_queue_item(report: GateReport) -> ReviewQueueItem {
     ReviewQueueItem {
         queue_id: format!("gate-{}", report.target_id),

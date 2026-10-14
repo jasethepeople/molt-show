@@ -95,6 +95,23 @@ with status `pending_human_review`. Both verdicts return a non-zero exit status,
 so a producer or CI pipeline cannot accidentally publish a non-pass proposal.
 Only `pass` exits successfully.
 
+Pending items can be inspected and decided without mutating the original
+queue:
+
+```bash
+cargo run --bin review -- list --queue /tmp/human-review.jsonl
+cargo run --bin review -- decide \
+  --queue /tmp/human-review.jsonl \
+  --decisions /tmp/review-decisions.jsonl \
+  --target show-001-episode-002-raw-draft \
+  --reviewer producer-human-01 \
+  --decision revise \
+  --note "Attach sources and remove internal terminology."
+```
+
+Valid decisions are `approve`, `reject`, and `revise`. Decisions are append-only
+records, preserving the original gate result and the reviewer identity.
+
 ## Invariants
 
 - The event log remains the source of truth.
