@@ -1,0 +1,11 @@
+episode,expected,verdict,exit_code,latency_ms,finding_count,review_queue_lines,audit_lines
+episode-01,pass,pass,0,3.204375,0,0,1
+episode-02,review,review,1,6.659113,1,1,1
+episode-03,reject,reject,1,4.207143,1,1,1
+episode-04,pass,pass,0,4.678021,0,0,1
+episode-05,review,review,1,4.968735,1,1,1
+episode-06,reject,reject,1,6.446039,1,1,1
+episode-07,pass,pass,0,6.128608,0,0,1
+episode-08,review,review,1,4.012973,1,1,1
+episode-09,reject,reject,1,5.159766,1,1,1
+episode-10,pass,pass,0,4.242507,0,0,1

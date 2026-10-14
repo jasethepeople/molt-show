@@ -1,0 +1,116 @@
+{
+  "concurrency": 10,
+  "wall_time_ms": 15.42706999953225,
+  "results": [
+    {
+      "episode": "episode-01",
+      "expected": "pass",
+      "verdict": "pass",
+      "exit_code": 0,
+      "latency_ms": 3.2043749997683335,
+      "finding_count": 0,
+      "review_queue_lines": 0,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-01-audit.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-01-report.json"
+    },
+    {
+      "episode": "episode-02",
+      "expected": "review",
+      "verdict": "review",
+      "exit_code": 1,
+      "latency_ms": 6.659112999841454,
+      "finding_count": 1,
+      "review_queue_lines": 1,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-02-audit.jsonl\nqueued multi-show-episode-02 for human review at experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-02-review.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-02-report.json\nError: \"gate verdict: review\""
+    },
+    {
+      "episode": "episode-03",
+      "expected": "reject",
+      "verdict": "reject",
+      "exit_code": 1,
+      "latency_ms": 4.207142999803182,
+      "finding_count": 1,
+      "review_queue_lines": 1,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-03-audit.jsonl\nqueued multi-show-episode-03 for human review at experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-03-review.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-03-report.json\nError: \"gate verdict: reject\""
+    },
+    {
+      "episode": "episode-04",
+      "expected": "pass",
+      "verdict": "pass",
+      "exit_code": 0,
+      "latency_ms": 4.678021000472654,
+      "finding_count": 0,
+      "review_queue_lines": 0,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-04-audit.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-04-report.json"
+    },
+    {
+      "episode": "episode-05",
+      "expected": "review",
+      "verdict": "review",
+      "exit_code": 1,
+      "latency_ms": 4.968735000147717,
+      "finding_count": 1,
+      "review_queue_lines": 1,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-05-audit.jsonl\nqueued multi-show-episode-05 for human review at experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-05-review.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-05-report.json\nError: \"gate verdict: review\""
+    },
+    {
+      "episode": "episode-06",
+      "expected": "reject",
+      "verdict": "reject",
+      "exit_code": 1,
+      "latency_ms": 6.446038999456505,
+      "finding_count": 1,
+      "review_queue_lines": 1,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-06-audit.jsonl\nqueued multi-show-episode-06 for human review at experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-06-review.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-06-report.json\nError: \"gate verdict: reject\""
+    },
+    {
+      "episode": "episode-07",
+      "expected": "pass",
+      "verdict": "pass",
+      "exit_code": 0,
+      "latency_ms": 6.1286079999263166,
+      "finding_count": 0,
+      "review_queue_lines": 0,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-07-audit.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-07-report.json"
+    },
+    {
+      "episode": "episode-08",
+      "expected": "review",
+      "verdict": "review",
+      "exit_code": 1,
+      "latency_ms": 4.012973000499187,
+      "finding_count": 1,
+      "review_queue_lines": 1,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-08-audit.jsonl\nqueued multi-show-episode-08 for human review at experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-08-review.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-08-report.json\nError: \"gate verdict: review\""
+    },
+    {
+      "episode": "episode-09",
+      "expected": "reject",
+      "verdict": "reject",
+      "exit_code": 1,
+      "latency_ms": 5.159765999451338,
+      "finding_count": 1,
+      "review_queue_lines": 1,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-09-audit.jsonl\nqueued multi-show-episode-09 for human review at experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-09-review.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-09-report.json\nError: \"gate verdict: reject\""
+    },
+    {
+      "episode": "episode-10",
+      "expected": "pass",
+      "verdict": "pass",
+      "exit_code": 0,
+      "latency_ms": 4.242506999617035,
+      "finding_count": 0,
+      "review_queue_lines": 0,
+      "audit_lines": 1,
+      "stderr": "appended gate audit to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-10-audit.jsonl\nwrote gate report to experiments/show-001/runs/multi-show-stress-2026-10-14/results/episode-10-report.json"
+    }
+  ]
+}
