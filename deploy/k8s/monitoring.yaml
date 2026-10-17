@@ -1,0 +1,128 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: molt-admission-controller
+  labels:
+    app.kubernetes.io/name: molt-admission-controller
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: molt-admission-controller
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: molt-admission-alerts
+  labels:
+    app.kubernetes.io/name: molt-admission-controller
+    release: prometheus
+spec:
+  groups:
+    - name: molt-admission.recording
+      interval: 30s
+      rules:
+        - record: molt:episode_completion_rate5m
+          expr: |
+            sum(rate(molt_episode_completed_total{result="success"}[5m]))
+            /
+            clamp_min(sum(rate(molt_episode_completed_total[5m])), 1)
+        - record: molt:inference_error_rate5m
+          expr: |
+            sum(rate(molt_inference_requests_total{status=~"failed|timeout"}[5m]))
+            /
+            clamp_min(sum(rate(molt_inference_requests_total[5m])), 1)
+        - record: molt:queue_age_p95_seconds
+          expr: |
+            histogram_quantile(0.95, sum by (le) (rate(molt_inference_queue_wait_seconds_bucket[5m])))
+    - name: molt-admission.alerts
+      rules:
+        - alert: MoltAdmissionQueueAgeHigh
+          expr: molt:queue_age_p95_seconds > 600
+          for: 10m
+          labels:
+            severity: warning
+            component: admission
+          annotations:
+            summary: MOLT admission queue age is high
+            description: 95th percentile inference queue wait exceeds 10 minutes.
+        - alert: MoltAdmissionQueueGrowing
+          expr: |
+            deriv(molt_admission_queue_depth[15m]) > 0
+            and molt_admission_queue_depth > 10
+          for: 15m
+          labels:
+            severity: warning
+            component: admission
+          annotations:
+            summary: MOLT admission queue is growing
+            description: Queue depth has increased continuously for 15 minutes.
+        - alert: MoltInferenceErrorRateHigh
+          expr: molt:inference_error_rate5m >= 0.02
+          for: 10m
+          labels:
+            severity: critical
+            component: inference
+          annotations:
+            summary: MOLT inference error rate exceeds 2 percent
+            description: Worker process failures or timeouts require rollback review.
+        - alert: MoltEpisodeCompletionLow
+          expr: molt:episode_completion_rate5m < 0.99
+          for: 10m
+          labels:
+            severity: critical
+            component: episode-runtime
+          annotations:
+            summary: MOLT episode completion rate is below target
+            description: Episode infrastructure completion is below the 99 percent hard gate.
+        - alert: MoltHistoryVerificationFailure
+          expr: increase(molt_history_verification_total{result="failure"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            component: integrity
+          annotations:
+            summary: MOLT signed-history verification failed
+            description: Stop promotion and investigate event integrity immediately.
+        - alert: MoltEventIntegrityViolation
+          expr: increase(molt_duplicate_event_total[5m]) > 0 or increase(molt_event_order_violation_total[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            component: integrity
+          annotations:
+            summary: MOLT event integrity violation detected
+            description: Duplicate or out-of-order signed events were detected.
+        - alert: MoltWorkerUnavailable
+          expr: sum(molt_admission_slots{state="available"}) == 0
+          for: 60s
+          labels:
+            severity: critical
+            component: worker-pool
+          annotations:
+            summary: No MOLT inference capacity is available
+            description: All worker slots are unavailable or circuit-broken.
+        - alert: MoltGpuMemoryPressure
+          expr: max(molt_gpu_memory_used_bytes / clamp_min(molt_gpu_memory_used_bytes + molt_gpu_memory_available_bytes, 1)) > 0.90
+          for: 10m
+          labels:
+            severity: warning
+            component: gpu
+          annotations:
+            summary: MOLT GPU memory is above 90 percent
+            description: Hold slot increases and inspect model residency/context size.
+        - alert: MoltCandidateThroughputRegression
+          expr: |
+            molt_rollout_candidate_throughput_ratio < 0.75
+          for: 10m
+          labels:
+            severity: critical
+            component: rollout
+          annotations:
+            summary: Candidate throughput is 25 percent below previous good
+            description: Automatically pause promotion and roll back if configured.

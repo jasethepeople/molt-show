@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: molt-admission-policy
+  labels:
+    app.kubernetes.io/name: molt-admission-controller
+data:
+  policy.yaml: |
+    queue:
+      stream: molt:episodes
+      consumer_group: admission-controller
+      max_depth: 100
+      max_age_seconds: 3600
+      expiry_action: mark_expired_and_alert
+    admission:
+      global_in_flight: 1
+      routing: least_loaded
+      reserve_retry_slots: 1
+      max_episode_retries: 1
+      episode_timeout_seconds: 1200
+      retryable_errors:
+        - transport_error
+        - worker_restart
+        - model_load_failure
+      non_retryable_errors:
+        - signed_event_conflict
+        - gate_policy_failure
+    rollout:
+      canary_steps: [5, 25, 50, 100]
+      min_healthy_windows: 2
+      auto_rollback: true
+      candidate_max_p95_regression_percent: 25
+      candidate_min_throughput_ratio: 0.90
+    integrity:
+      require_signed_history_verification: true
+      require_gate_regression_fixture: true
+      reject_duplicate_event_ids: true
+    workers:
+      required_labels:
+        - worker_id
+        - model
+        - model_digest
+        - capacity_slots
+      health_grace_seconds: 60

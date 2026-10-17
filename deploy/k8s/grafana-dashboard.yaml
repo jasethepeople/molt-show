@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: molt-admission-dashboard
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/name: molt-admission-controller
+data:
+  molt-admission-capacity.json: |
+    {
+      "annotations": {"list": []},
+      "editable": true,
+      "graphTooltip": 1,
+      "panels": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "Completed Episodes / Minute",
+          "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+          "targets": [{"expr": "sum(rate(molt_episode_completed_total{result=\"success\"}[5m])) * 60", "legendFormat": "episodes/min"}],
+          "fieldConfig": {"defaults": {"unit": "short", "decimals": 3}, "overrides": []}
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Queue Depth",
+          "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+          "targets": [{"expr": "molt_admission_queue_depth", "legendFormat": "queued"}],
+          "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+        },
+        {
+          "id": 3,
+          "type": "stat",
+          "title": "Available Inference Slots",
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+          "targets": [{"expr": "sum(molt_admission_slots{state=\"available\"})", "legendFormat": "available"}],
+          "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+        },
+        {
+          "id": 4,
+          "type": "stat",
+          "title": "Signed History Failures",
+          "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+          "targets": [{"expr": "sum(increase(molt_history_verification_total{result=\"failure\"}[1h]))", "legendFormat": "failures"}],
+          "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []}
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "Queue Depth and Age",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+          "targets": [
+            {"expr": "molt_admission_queue_depth", "legendFormat": "depth"},
+            {"expr": "molt:queue_age_p95_seconds", "legendFormat": "p95 queue age seconds", "axisPlacement": "right"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "Episode Latency",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+          "targets": [
+            {"expr": "histogram_quantile(0.50, sum by (le) (rate(molt_episode_duration_seconds_bucket[5m])))", "legendFormat": "p50"},
+            {"expr": "histogram_quantile(0.95, sum by (le) (rate(molt_episode_duration_seconds_bucket[5m])))", "legendFormat": "p95"},
+            {"expr": "histogram_quantile(0.99, sum by (le) (rate(molt_episode_duration_seconds_bucket[5m])))", "legendFormat": "p99"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+        },
+        {
+          "id": 7,
+          "type": "timeseries",
+          "title": "Inference Generation Latency by Worker",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+          "targets": [
+            {"expr": "histogram_quantile(0.50, sum by (worker, le) (rate(molt_inference_generation_seconds_bucket[5m])))", "legendFormat": "{{worker}} p50"},
+            {"expr": "histogram_quantile(0.95, sum by (worker, le) (rate(molt_inference_generation_seconds_bucket[5m])))", "legendFormat": "{{worker}} p95"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+        },
+        {
+          "id": 8,
+          "type": "timeseries",
+          "title": "Worker Slot Utilization",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+          "targets": [{"expr": "sum by (worker) (molt_admission_slots{state=\"running\"}) / clamp_min(sum by (worker) (molt_admission_slots), 1)", "legendFormat": "{{worker}} utilization"}],
+          "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}
+        },
+        {
+          "id": 9,
+          "type": "timeseries",
+          "title": "Reliability",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+          "targets": [
+            {"expr": "molt:episode_completion_rate5m", "legendFormat": "completion rate"},
+            {"expr": "1 - molt:inference_error_rate5m", "legendFormat": "inference success rate"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}
+        },
+        {
+          "id": 10,
+          "type": "timeseries",
+          "title": "Gate Verdicts",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+          "targets": [{"expr": "sum by (verdict) (rate(molt_gate_evaluations_total[5m]))", "legendFormat": "{{verdict}}"}],
+          "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []}
+        },
+        {
+          "id": 11,
+          "type": "table",
+          "title": "Active Rollout and Capacity",
+          "gridPos": {"h": 6, "w": 24, "x": 0, "y": 28},
+          "targets": [
+            {"expr": "molt_rollout_stage_info", "format": "table", "instant": true, "legendFormat": "rollout"},
+            {"expr": "molt_rollout_candidate_throughput_ratio", "format": "table", "instant": true, "legendFormat": "candidate ratio"}
+          ],
+          "fieldConfig": {"defaults": {}, "overrides": []}
+        }
+      ],
+      "refresh": "15s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["molt", "admission-control", "capacity"],
+      "templating": {"list": []},
+      "time": {"from": "now-6h", "to": "now"},
+      "timezone": "browser",
+      "title": "MOLT Admission Control Capacity",
+      "uid": "molt-admission-capacity",
+      "version": 1
+    }
